@@ -482,6 +482,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 			actions: false,
 		},
 	}
+	console.log(CONFIGURATION.locations)
 	LocatorPlus.init(CONFIGURATION)
 })
 

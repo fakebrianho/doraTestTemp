@@ -11,11 +11,11 @@ class LocatorPlus {
 
 	constructor(configuration, loc) {
 		this.MAX_DISTANCE_METERS = 16093
-		this.allLocations = configuration.locations || []
-		this.locations = configuration.locations || []
+		this.allLocations = []
+		this.locations = []
 		this.capabilities = configuration.capabilities || {}
 		this.mapOptions = configuration.mapOptions || {}
-		// this.fetchAndSetLocations()
+		this.fetchAndSetLocations()
 	}
 
 	/** Returns a fully initialized Locator widget. */
@@ -365,7 +365,7 @@ class LocatorPlus {
 	}
 
 	updateTravelTimes() {
-		console.log(this.allLocations)
+		console.log('update travel time')
 		if (!this.searchLocation) return
 
 		const clonedLocations = [...this.allLocations] // Clone the allLocations for manipulation
@@ -459,9 +459,16 @@ class LocatorPlus {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-	const locations = await getDataFromLocalStorage()
 	const CONFIGURATION = {
-		locations: locations,
+		locations: [
+			{
+				title: '1717 S Prairie Ave',
+				address1: '1717 S Prairie Ave',
+				address2: 'Chicago, IL 60616, USA',
+				coords: { lat: 41.85876628753545, lng: -87.62020349510652 },
+				placeId: 'ChIJM6sbuIEsDogR5sQEg7VSNOs',
+			},
+		],
 		mapOptions: {
 			center: { lat: 38.0, lng: -100.0 },
 			fullscreenControl: true,
@@ -482,7 +489,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 			actions: false,
 		},
 	}
-	LocatorPlus.init(CONFIGURATION)
+	const locations = await getDataFromLocalStorage()
+	LocatorPlus.init(CONFIGURATION, locations)
 })
 
 // document.addEventListener('DOMContentLoaded', async function () {

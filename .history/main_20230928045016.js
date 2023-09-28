@@ -3,7 +3,6 @@
 // Please note unpkg.com is unaffiliated with Google Maps Platform.
 import { APILoader } from 'https://unpkg.com/@googlemaps/extended-component-library@0.4'
 import { fetchLocations } from './FetchLocations'
-import { getDataFromLocalStorage } from './WriteToLocal'
 
 class LocatorPlus {
 	static REQUIRED_MAPS_JS_LIBRARIES = ['core', 'geometry', 'marker', 'routes']
@@ -11,11 +10,11 @@ class LocatorPlus {
 
 	constructor(configuration, loc) {
 		this.MAX_DISTANCE_METERS = 16093
-		this.allLocations = configuration.locations || []
-		this.locations = configuration.locations || []
+		this.allLocations = []
+		this.locations = []
 		this.capabilities = configuration.capabilities || {}
 		this.mapOptions = configuration.mapOptions || {}
-		// this.fetchAndSetLocations()
+		this.fetchAndSetLocations()
 	}
 
 	/** Returns a fully initialized Locator widget. */
@@ -365,7 +364,7 @@ class LocatorPlus {
 	}
 
 	updateTravelTimes() {
-		console.log(this.allLocations)
+		console.log('update travel time')
 		if (!this.searchLocation) return
 
 		const clonedLocations = [...this.allLocations] // Clone the allLocations for manipulation
@@ -458,32 +457,9 @@ class LocatorPlus {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', async function () {
-	const locations = await getDataFromLocalStorage()
-	const CONFIGURATION = {
-		locations: locations,
-		mapOptions: {
-			center: { lat: 38.0, lng: -100.0 },
-			fullscreenControl: true,
-			mapTypeControl: false,
-			streetViewControl: false,
-			zoom: 4,
-			zoomControl: true,
-			maxZoom: 17,
-			mapId: '',
-		},
-		mapsApiKey: 'AIzaSyD9ny0ZwZE4hjH0RWqsdWxNed2qR2HFBKk',
-		capabilities: {
-			input: true,
-			autocomplete: true,
-			directions: true,
-			distanceMatrix: true,
-			details: true,
-			actions: false,
-		},
-	}
+document.addEventListener('DOMContentLoaded', () =>
 	LocatorPlus.init(CONFIGURATION)
-})
+)
 
 // document.addEventListener('DOMContentLoaded', async function () {
 // 	const locations = await getDataFromLocalStorage()

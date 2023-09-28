@@ -11,8 +11,8 @@ class LocatorPlus {
 
 	constructor(configuration, loc) {
 		this.MAX_DISTANCE_METERS = 16093
-		this.allLocations = configuration.locations || []
-		this.locations = configuration.locations || []
+		this.allLocations = configuration.location || []
+		this.locations = configuration.location || []
 		this.capabilities = configuration.capabilities || {}
 		this.mapOptions = configuration.mapOptions || {}
 		// this.fetchAndSetLocations()
@@ -482,6 +482,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 			actions: false,
 		},
 	}
+	console.log(CONFIGURATION)
 	LocatorPlus.init(CONFIGURATION)
 })
 

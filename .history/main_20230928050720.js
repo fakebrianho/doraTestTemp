@@ -11,8 +11,8 @@ class LocatorPlus {
 
 	constructor(configuration, loc) {
 		this.MAX_DISTANCE_METERS = 16093
-		this.allLocations = configuration.locations || []
-		this.locations = configuration.locations || []
+		this.allLocations = configuration.location || []
+		this.locations = configuration.location || []
 		this.capabilities = configuration.capabilities || {}
 		this.mapOptions = configuration.mapOptions || {}
 		// this.fetchAndSetLocations()
@@ -365,7 +365,7 @@ class LocatorPlus {
 	}
 
 	updateTravelTimes() {
-		console.log(this.allLocations)
+		console.log('update travel time')
 		if (!this.searchLocation) return
 
 		const clonedLocations = [...this.allLocations] // Clone the allLocations for manipulation
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 			actions: false,
 		},
 	}
-	LocatorPlus.init(CONFIGURATION)
+	LocatorPlus.init(CONFIGURATION, locations)
 })
 
 // document.addEventListener('DOMContentLoaded', async function () {
