@@ -1,3 +1,6 @@
+// This loads helper components from the Extended Component Library,
+// https://github.com/googlemaps/extended-component-library.
+// Please note unpkg.com is unaffiliated with Google Maps Platform.
 import { APILoader } from 'https://unpkg.com/@googlemaps/extended-component-library@0.4'
 import { fetchLocations } from './FetchLocations'
 import { getDataFromLocalStorage } from './WriteToLocal'
@@ -14,6 +17,7 @@ class LocatorPlus {
 		this.mapOptions = configuration.mapOptions || {}
 	}
 
+	/** Returns a fully initialized Locator widget. */
 	static async init(configuration) {
 		const locator = new LocatorPlus(configuration)
 
@@ -23,11 +27,13 @@ class LocatorPlus {
 		locator.initializeSearchInput()
 		locator.initializeDistanceMatrix()
 
+		// Initial render of results
 		locator.renderResultsList()
 
 		return locator
 	}
 
+	/** Loads resources from the Google Maps JS SDK. */
 	async loadMapsLibraries() {
 		this.mapsLibraries = {}
 		return Promise.all(
@@ -65,6 +71,12 @@ class LocatorPlus {
 		)
 
 		this.overlayLayoutEl = document.querySelector('gmpx-overlay-layout')
+		// this.detailsEl = document.querySelector(
+		// 	'#details-panel gmpx-place-overview'
+		// )
+		// document
+		// .querySelector('#details-panel .back-button')
+		// .addEventListener('click', () => this.overlayLayoutEl.hideOverlay())
 	}
 
 	chunkArray(arr, chunkSize) {
@@ -75,6 +87,7 @@ class LocatorPlus {
 		return chunks
 	}
 
+	/** Sets one of the locations as "selected". */
 	selectResultItem(
 		locationIdx,
 		panToMarker,
@@ -82,53 +95,33 @@ class LocatorPlus {
 		selectedList = false,
 		selectedListIndex = null
 	) {
+		console.log(selectedList)
 		this.selectedLocationIdx = locationIdx
-		if (!selectedList) {
-			for (const li of this.resultsContainerEl.children) {
-				li.classList.remove('selected')
-				if (
-					parseInt(li.dataset.locationIndex) ===
-					this.selectedLocationIdx
-				) {
-					li.classList.add('selected')
-					if (scrollToResult) {
-						console.log('scrolling')
-						li.scrollIntoView({
-							behavior: 'smooth',
-							block: 'nearest',
-						})
-					}
+		for (const li of this.resultsContainerEl.children) {
+			li.classList.remove('selected')
+			if (
+				parseInt(li.dataset.locationIndex) === this.selectedLocationIdx
+			) {
+				li.classList.add('selected')
+				if (scrollToResult) {
+					console.log('scrolling')
+					li.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 				}
 			}
-		} else if (selectedList) {
-			for (let i = 0; i < this.resultsContainerEl.children.length; i++) {
-				this.resultsContainerEl.children[i].classList.remove('selected')
-			}
-			this.resultsContainerEl.children[locationIdx].classList.add(
-				'selected'
-			)
 		}
-
-		if (panToMarker) {
-			// Zoom out first
-			this.map.setZoom(9) // Adjust this value based on how much you want to zoom out
-
-			setTimeout(() => {
-				this.map.setZoom(12) // Adjust zoom level as desired
-				if (selectedList && this.searchLocation) {
-					this.map.panTo(this.locations[selectedListIndex].coords)
-					selectedList = false
-				} else {
-					this.map.panTo(
-						this.allLocations[this.selectedLocationIdx].coords
-					)
-				}
-			}, 500) // 500ms delay between zooming out and zooming in, adjust as needed
+		console.log(selectedList)
+		if (panToMarker && selectedList && this.searchLocation) {
+			this.map.panTo(this.locations[selectedListIndex].coords)
+			this.updateDirections()
+			// this.updateDirectionsOnSelect = false
+			this.searchLocation = null
+			selectedList = false
 		}
 	}
 
 	/** Updates the map bounds to markers. */
 	updateBounds() {
+		console.log('updating bounds')
 		const bounds = new this.mapsLibraries.core.LatLngBounds()
 		if (this.searchLocationMarker) {
 			bounds.extend(this.searchLocationMarker.getPosition())
@@ -136,11 +129,17 @@ class LocatorPlus {
 		for (let i = 0; i < this.markers.length; i++) {
 			bounds.extend(this.markers[i].getPosition())
 		}
-
 		this.map.fitBounds(bounds)
 	}
 
 	updateMap() {
+		console.log('updating map')
+		// this.markers = this.locations.map((location, index) => {
+		// 	const marker = new this.mapsLibraries.marker.Marker({
+		// 		position: location.coords,
+		// 		map: this.map,
+		// 		title: location.title,
+		// 	})
 		this.markers = this.locations.map((location, index) => {
 			const marker = new this.mapsLibraries.marker.Marker({
 				position: location.coords,
@@ -148,18 +147,24 @@ class LocatorPlus {
 				title: location.title,
 			})
 			marker.addListener('click', () => {
+				this.searchLocation = true
 				this.selectResultItem(index, true, false, true, index)
+				// resultSelectionHandler(true, index)
+				//const resultSelectionHandler = (marker = false, selectedIndex = null) => {
 			})
 			return marker
 		})
 
+		// Fit map to marker bounds after initialization.
 		if (this.locations.length) {
 			this.updateBounds()
 		}
 
+		// Create a PlaceResult stub for each location.
 		const LatLng = this.mapsLibraries.core.LatLng
 		for (const location of this.locations) {
 			location.placeResult = {
+				// place_id: location.placeId,
 				name: location.title,
 				formatted_address: location.address1 + ' ' + location.address2,
 				geometry: { location: new LatLng(location.coords) },
@@ -167,6 +172,7 @@ class LocatorPlus {
 		}
 	}
 
+	/** Initializes the map and markers. */
 	initializeMapLocations() {
 		this.searchLocation = null
 		this.searchLocationMarker = null
@@ -180,6 +186,13 @@ class LocatorPlus {
 			mapId: this.mapOptions.mapId || 'DEMO_MAP_ID',
 		})
 
+		// Create a marker for each location.
+		// this.markers = this.locations.map((location, index) => {
+		// 	const marker = new this.mapsLibraries.marker.Marker({
+		// 		position: location.coords,
+		// 		map: this.map,
+		// 		title: location.title,
+		// 	})
 		this.markers = this.locations.map((location, index) => {
 			const marker = new this.mapsLibraries.marker.Marker({
 				position: location.coords,
@@ -187,15 +200,17 @@ class LocatorPlus {
 				title: location.title,
 			})
 			marker.addListener('click', () => {
-				this.selectResultItem(index, true, true, true, null)
+				this.selectResultItem(index, true, true, false, null)
 			})
 			return marker
 		})
 
+		// Fit map to marker bounds after initialization.
 		if (this.locations.length) {
 			this.updateBounds()
 		}
 
+		// Create a PlaceResult stub for each location.
 		const LatLng = this.mapsLibraries.core.LatLng
 		for (const location of this.locations) {
 			location.placeResult = {
@@ -207,6 +222,10 @@ class LocatorPlus {
 		}
 	}
 
+	/**
+	 * Gets the distance from a store location to the user's location, used in
+	 * sorting the list.
+	 */
 	getLocationDistance(location) {
 		if (!this.searchLocation) return null
 
@@ -222,6 +241,9 @@ class LocatorPlus {
 		)
 	}
 
+	/**
+	 * Creates a DOM Element corresponding to an individual result item.
+	 */
 	createResultItem(location) {
 		// Create the parent DOM node.
 		const li =
@@ -255,15 +277,22 @@ class LocatorPlus {
 			}
 		}
 
+		// Add click event handlers.
+		// li.querySelector('.view-details').addEventListener('click', () => {
+		// 	this.showDetails(location.index)
+		// })
+
 		const resultSelectionHandler = (
 			isMarker = false,
 			selectedIndex = null
 		) => {
+			// console.log(marker)
 			if (
 				location.index !== this.selectedLocationIdx ||
 				this.updateDirectionsOnSelect
 			) {
 				if (!isMarker) {
+					console.log('1 running')
 					this.selectResultItem(
 						location.index,
 						true,
@@ -272,6 +301,7 @@ class LocatorPlus {
 						null
 					)
 				} else {
+					console.log('2 running')
 					this.selectResultItem(
 						location.index,
 						true,
@@ -280,11 +310,14 @@ class LocatorPlus {
 						selectedIndex
 					)
 				}
-				// this.updateDirections()
+				this.updateDirections()
 				this.updateDirectionsOnSelect = false
 			}
 		}
 
+		// Clicking anywhere on the item selects this location.
+		// Additionally, create a button element to make this behavior
+		// accessible under tab navigation.
 		li.addEventListener('click', () => resultSelectionHandler(false, null))
 		li.querySelector('.select-location').addEventListener('click', (e) => {
 			resultSelectionHandler(false, null)
@@ -296,7 +329,10 @@ class LocatorPlus {
 
 	/** Renders the list of items next to the map. */
 	renderResultsList() {
+		// this.clearMarkers()
+
 		let locations = this.allLocations.slice()
+		// let locations = this.locations.slice()
 		for (let i = 0; i < locations.length; i++) {
 			locations[i].index = i
 		}
@@ -345,6 +381,9 @@ class LocatorPlus {
 			},
 		})
 
+		// Update the locator's idea of the user's country, used for units. Use
+		// `formatted_address` instead of the more structured `address_components`
+		// to avoid an additional billed call.
 		const addressParts = place.formattedAddress.split(' ')
 		this.userCountry = addressParts[addressParts.length - 1]
 
@@ -372,6 +411,7 @@ class LocatorPlus {
 	}
 
 	updateTravelTimes() {
+		console.log(this.allLocations)
 		if (!this.searchLocation) return
 
 		const clonedLocations = [...this.allLocations] // Clone the allLocations for manipulation
@@ -440,22 +480,11 @@ class LocatorPlus {
 	 * Update directions displayed from the search location to the selected
 	 * location on the map.
 	 */
-	updateDirections(selectedIndex = null) {
-		// console.log(this.locations[selectedIndex])
+	updateDirections() {
 		if (this.searchLocation && this.selectedLocationIdx != null) {
 			this.routeEl.originLatLng = this.searchLocation.location
-			if (selectedIndex !== null) {
-				// console.log(this.locations)
-				this.routeEl.destinationLatLng =
-					this.locations[selectedIndex].coords
-				this.selectedIndex = null
-			} else {
-				console.log('i shluldnt be running bith')
-				console.log(selectedIndex)
-				console.log(this.allLocations[this.selectedLocationIdx])
-				this.routeEl.destinationLatLng =
-					this.allLocations[this.selectedLocationIdx].coords
-			}
+			this.routeEl.destinationLatLng =
+				this.allLocations[this.selectedLocationIdx].coords
 		}
 	}
 
@@ -484,9 +513,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 			fullscreenControl: true,
 			mapTypeControl: false,
 			streetViewControl: false,
-			zoom: 9,
+			zoom: 4,
 			zoomControl: true,
-			maxZoom: 50,
+			maxZoom: 17,
 			mapId: '',
 		},
 		mapsApiKey: 'AIzaSyD9ny0ZwZE4hjH0RWqsdWxNed2qR2HFBKk',
@@ -501,3 +530,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 	}
 	LocatorPlus.init(CONFIGURATION)
 })
+
+// document.addEventListener('DOMContentLoaded', async function () {
+// 	const locations = await getDataFromLocalStorage()
+// 	LocatorPlus.init(CONFIGURATION, locations)
+// 	// Use the locations data in your application
+// })

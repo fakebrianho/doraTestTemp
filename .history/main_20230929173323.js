@@ -125,6 +125,15 @@ class LocatorPlus {
 				}
 			}, 500) // 500ms delay between zooming out and zooming in, adjust as needed
 		}
+		// if (panToMarker) {
+		// 	this.map.setZoom(12) // you can adjust the zoom level as desired
+		// 	this.map.panTo(this.allLocations[this.selectedLocationIdx].coords)
+		// }
+		// if (panToMarker && selectedList && this.searchLocation) {
+		// 	this.map.setZoom(12) // you can adjust the zoom level as desired
+		// 	this.map.panTo(this.locations[selectedListIndex].coords)
+		// 	selectedList = false
+		// }
 	}
 
 	/** Updates the map bounds to markers. */

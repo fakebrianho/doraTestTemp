@@ -11,6 +11,7 @@ export function getDataFromLocalStorage() {
 	const storageData = JSON.parse(localStorage.getItem('locationsData'))
 
 	if (!storageData) {
+		// Data doesn't exist, fetch it.
 		return fetchDataAndUpdateStorage()
 	}
 

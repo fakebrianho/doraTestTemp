@@ -82,48 +82,33 @@ class LocatorPlus {
 		selectedList = false,
 		selectedListIndex = null
 	) {
+		console.log(panToMarker)
 		this.selectedLocationIdx = locationIdx
-		if (!selectedList) {
-			for (const li of this.resultsContainerEl.children) {
-				li.classList.remove('selected')
-				if (
-					parseInt(li.dataset.locationIndex) ===
-					this.selectedLocationIdx
-				) {
-					li.classList.add('selected')
-					if (scrollToResult) {
-						console.log('scrolling')
-						li.scrollIntoView({
-							behavior: 'smooth',
-							block: 'nearest',
-						})
-					}
+		for (const li of this.resultsContainerEl.children) {
+			li.classList.remove('selected')
+			if (
+				parseInt(li.dataset.locationIndex) === this.selectedLocationIdx
+			) {
+				li.classList.add('selected')
+				if (scrollToResult) {
+					console.log('scrolling')
+					li.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 				}
 			}
-		} else if (selectedList) {
-			for (let i = 0; i < this.resultsContainerEl.children.length; i++) {
-				this.resultsContainerEl.children[i].classList.remove('selected')
-			}
-			this.resultsContainerEl.children[locationIdx].classList.add(
-				'selected'
-			)
 		}
-
 		if (panToMarker) {
-			// Zoom out first
-			this.map.setZoom(9) // Adjust this value based on how much you want to zoom out
+			this.map.setZoom(12) // you can adjust the zoom level as desired
+			this.map.panTo(this.allLocations[this.selectedLocationIdx].coords)
+		}
+		if (panToMarker && selectedList && this.searchLocation) {
+			this.map.setZoom(12) // you can adjust the zoom level as desired
+			this.map.panTo(this.locations[selectedListIndex].coords)
+			// this.map.setCenter(
+			// this.allLocations[this.selectedLocationIdx].coords
+			// )
 
-			setTimeout(() => {
-				this.map.setZoom(12) // Adjust zoom level as desired
-				if (selectedList && this.searchLocation) {
-					this.map.panTo(this.locations[selectedListIndex].coords)
-					selectedList = false
-				} else {
-					this.map.panTo(
-						this.allLocations[this.selectedLocationIdx].coords
-					)
-				}
-			}, 500) // 500ms delay between zooming out and zooming in, adjust as needed
+			// this.updateDirections(selectedListIndex)
+			selectedList = false
 		}
 	}
 
@@ -272,6 +257,7 @@ class LocatorPlus {
 						null
 					)
 				} else {
+					console.log('2 running')
 					this.selectResultItem(
 						location.index,
 						true,

@@ -82,49 +82,57 @@ class LocatorPlus {
 		selectedList = false,
 		selectedListIndex = null
 	) {
+		console.log(panToMarker)
 		this.selectedLocationIdx = locationIdx
-		if (!selectedList) {
-			for (const li of this.resultsContainerEl.children) {
-				li.classList.remove('selected')
-				if (
-					parseInt(li.dataset.locationIndex) ===
-					this.selectedLocationIdx
-				) {
-					li.classList.add('selected')
-					if (scrollToResult) {
-						console.log('scrolling')
-						li.scrollIntoView({
-							behavior: 'smooth',
-							block: 'nearest',
-						})
-					}
+		for (const li of this.resultsContainerEl.children) {
+			li.classList.remove('selected')
+			if (
+				parseInt(li.dataset.locationIndex) === this.selectedLocationIdx
+			) {
+				li.classList.add('selected')
+				if (scrollToResult) {
+					console.log('scrolling')
+					li.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 				}
 			}
-		} else if (selectedList) {
-			for (let i = 0; i < this.resultsContainerEl.children.length; i++) {
-				this.resultsContainerEl.children[i].classList.remove('selected')
-			}
-			this.resultsContainerEl.children[locationIdx].classList.add(
-				'selected'
+		}
+		if (panToMarker) {
+			// Zoom out first
+			this.map.setZoom(4) // Adjust this value based on how much you want to zoom out
+
+			// Add an event listener to detect when the zoom change is done
+			const zoomListener = google.maps.event.addListener(
+				this.map,
+				'zoom_changed',
+				() => {
+					// Remove the listener immediately to prevent multiple triggers
+					google.maps.event.removeListener(zoomListener)
+
+					// Then zoom back in
+					this.map.setZoom(12) // Adjust zoom level as desired
+
+					// Then pan to the desired location
+					if (selectedList && this.searchLocation) {
+						this.map.panTo(this.locations[selectedListIndex].coords)
+						selectedList = false
+					} else {
+						this.map.panTo(
+							this.allLocations[this.selectedLocationIdx].coords
+						)
+					}
+				}
 			)
 		}
 
-		if (panToMarker) {
-			// Zoom out first
-			this.map.setZoom(9) // Adjust this value based on how much you want to zoom out
-
-			setTimeout(() => {
-				this.map.setZoom(12) // Adjust zoom level as desired
-				if (selectedList && this.searchLocation) {
-					this.map.panTo(this.locations[selectedListIndex].coords)
-					selectedList = false
-				} else {
-					this.map.panTo(
-						this.allLocations[this.selectedLocationIdx].coords
-					)
-				}
-			}, 500) // 500ms delay between zooming out and zooming in, adjust as needed
-		}
+		// if (panToMarker) {
+		// 	this.map.setZoom(12) // you can adjust the zoom level as desired
+		// 	this.map.panTo(this.allLocations[this.selectedLocationIdx].coords)
+		// }
+		// if (panToMarker && selectedList && this.searchLocation) {
+		// 	this.map.setZoom(12) // you can adjust the zoom level as desired
+		// 	this.map.panTo(this.locations[selectedListIndex].coords)
+		// 	selectedList = false
+		// }
 	}
 
 	/** Updates the map bounds to markers. */
@@ -272,6 +280,7 @@ class LocatorPlus {
 						null
 					)
 				} else {
+					console.log('2 running')
 					this.selectResultItem(
 						location.index,
 						true,

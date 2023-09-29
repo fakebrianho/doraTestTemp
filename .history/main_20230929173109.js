@@ -82,7 +82,19 @@ class LocatorPlus {
 		selectedList = false,
 		selectedListIndex = null
 	) {
+		const currGlobalIdx = this.selectedLocationIdx
 		this.selectedLocationIdx = locationIdx
+		// console.log(this.selectedLocationIdx)
+		// console.log(currGlobalIdx)
+		// for (let i = 0; i < this.resultsContainerEl.children.length; i++) {
+		// 	this.resultsContainerEl.children[i].classList.remove('selected')
+		// }
+		// console.log(this.resultsContainerEl.children)
+		// console.log(this.selectedLocationIdx)
+		// this.resultsContainerEl.children[currGlobalIdx].classList.add(
+		// 'selected'
+		// )
+		console.log(selectedList)
 		if (!selectedList) {
 			for (const li of this.resultsContainerEl.children) {
 				li.classList.remove('selected')
@@ -104,9 +116,6 @@ class LocatorPlus {
 			for (let i = 0; i < this.resultsContainerEl.children.length; i++) {
 				this.resultsContainerEl.children[i].classList.remove('selected')
 			}
-			this.resultsContainerEl.children[locationIdx].classList.add(
-				'selected'
-			)
 		}
 
 		if (panToMarker) {
@@ -114,7 +123,11 @@ class LocatorPlus {
 			this.map.setZoom(9) // Adjust this value based on how much you want to zoom out
 
 			setTimeout(() => {
+				// Zoom back in
 				this.map.setZoom(12) // Adjust zoom level as desired
+
+				// Give a short delay before panning
+				// setTimeout(() => {
 				if (selectedList && this.searchLocation) {
 					this.map.panTo(this.locations[selectedListIndex].coords)
 					selectedList = false
@@ -125,6 +138,15 @@ class LocatorPlus {
 				}
 			}, 500) // 500ms delay between zooming out and zooming in, adjust as needed
 		}
+		// if (panToMarker) {
+		// 	this.map.setZoom(12) // you can adjust the zoom level as desired
+		// 	this.map.panTo(this.allLocations[this.selectedLocationIdx].coords)
+		// }
+		// if (panToMarker && selectedList && this.searchLocation) {
+		// 	this.map.setZoom(12) // you can adjust the zoom level as desired
+		// 	this.map.panTo(this.locations[selectedListIndex].coords)
+		// 	selectedList = false
+		// }
 	}
 
 	/** Updates the map bounds to markers. */

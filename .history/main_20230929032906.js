@@ -82,48 +82,29 @@ class LocatorPlus {
 		selectedList = false,
 		selectedListIndex = null
 	) {
+		console.log(panToMarker)
 		this.selectedLocationIdx = locationIdx
-		if (!selectedList) {
-			for (const li of this.resultsContainerEl.children) {
-				li.classList.remove('selected')
-				if (
-					parseInt(li.dataset.locationIndex) ===
-					this.selectedLocationIdx
-				) {
-					li.classList.add('selected')
-					if (scrollToResult) {
-						console.log('scrolling')
-						li.scrollIntoView({
-							behavior: 'smooth',
-							block: 'nearest',
-						})
-					}
+		for (const li of this.resultsContainerEl.children) {
+			li.classList.remove('selected')
+			if (
+				parseInt(li.dataset.locationIndex) === this.selectedLocationIdx
+			) {
+				li.classList.add('selected')
+				if (scrollToResult) {
+					console.log('scrolling')
+					li.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 				}
 			}
-		} else if (selectedList) {
-			for (let i = 0; i < this.resultsContainerEl.children.length; i++) {
-				this.resultsContainerEl.children[i].classList.remove('selected')
-			}
-			this.resultsContainerEl.children[locationIdx].classList.add(
-				'selected'
-			)
 		}
-
-		if (panToMarker) {
-			// Zoom out first
-			this.map.setZoom(9) // Adjust this value based on how much you want to zoom out
-
-			setTimeout(() => {
-				this.map.setZoom(12) // Adjust zoom level as desired
-				if (selectedList && this.searchLocation) {
-					this.map.panTo(this.locations[selectedListIndex].coords)
-					selectedList = false
-				} else {
-					this.map.panTo(
-						this.allLocations[this.selectedLocationIdx].coords
-					)
-				}
-			}, 500) // 500ms delay between zooming out and zooming in, adjust as needed
+		console.log(selectedList)
+		if (panToMarker && !this.searchLocation) {
+			this.map.panTo(this.allLocations[this.selectedLocationIdx].coords)
+			// console.log(this.selectedLocationIdx)
+		}
+		if (panToMarker && selectedList && this.searchLocation) {
+			this.map.panTo(this.locations[selectedListIndex].coords)
+			this.updateDirections(selectedListIndex)
+			selectedList = false
 		}
 	}
 
@@ -136,7 +117,6 @@ class LocatorPlus {
 		for (let i = 0; i < this.markers.length; i++) {
 			bounds.extend(this.markers[i].getPosition())
 		}
-
 		this.map.fitBounds(bounds)
 	}
 
@@ -187,7 +167,7 @@ class LocatorPlus {
 				title: location.title,
 			})
 			marker.addListener('click', () => {
-				this.selectResultItem(index, true, true, true, null)
+				this.selectResultItem(index, true, true, false, null)
 			})
 			return marker
 		})
@@ -255,6 +235,11 @@ class LocatorPlus {
 			}
 		}
 
+		// Add click event handlers.
+		// li.querySelector('.view-details').addEventListener('click', () => {
+		// 	this.showDetails(location.index)
+		// })
+
 		const resultSelectionHandler = (
 			isMarker = false,
 			selectedIndex = null
@@ -272,6 +257,7 @@ class LocatorPlus {
 						null
 					)
 				} else {
+					console.log('2 running')
 					this.selectResultItem(
 						location.index,
 						true,
@@ -280,7 +266,7 @@ class LocatorPlus {
 						selectedIndex
 					)
 				}
-				// this.updateDirections()
+				this.updateDirections()
 				this.updateDirectionsOnSelect = false
 			}
 		}
@@ -296,7 +282,10 @@ class LocatorPlus {
 
 	/** Renders the list of items next to the map. */
 	renderResultsList() {
+		// this.clearMarkers()
+
 		let locations = this.allLocations.slice()
+		// let locations = this.locations.slice()
 		for (let i = 0; i < locations.length; i++) {
 			locations[i].index = i
 		}
@@ -484,9 +473,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 			fullscreenControl: true,
 			mapTypeControl: false,
 			streetViewControl: false,
-			zoom: 9,
+			zoom: 4,
 			zoomControl: true,
-			maxZoom: 50,
+			maxZoom: 17,
 			mapId: '',
 		},
 		mapsApiKey: 'AIzaSyD9ny0ZwZE4hjH0RWqsdWxNed2qR2HFBKk',
@@ -501,3 +490,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 	}
 	LocatorPlus.init(CONFIGURATION)
 })
+
+// document.addEventListener('DOMContentLoaded', async function () {
+// 	const locations = await getDataFromLocalStorage()
+// 	LocatorPlus.init(CONFIGURATION, locations)
+// 	// Use the locations data in your application
+// })
