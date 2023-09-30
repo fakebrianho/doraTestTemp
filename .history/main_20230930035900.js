@@ -31,9 +31,8 @@ class LocatorPlus {
 		return locator
 	}
 	static setRadius(newRadius) {
-		console.log(newRadius)
-		LocatorPlus.MAX_DISTANCE_MILES = newRadius
-		console.log(LocatorPlus.MAX_DISTANCE_MILES)
+		this.MAX_DISTANCE_MILES = newRadius
+		console.log(this.MAX_DISTANCE_MILES)
 	}
 
 	async loadMapsLibraries() {
@@ -633,5 +632,9 @@ function toggleCheckboxes(activeCheckbox, otherCheckbox) {
 }
 
 function updateLocatorPlus(check) {
-	LocatorPlus.setRadius(check.value)
+	if (check.checked) {
+		LocatorPlus.setRadius(20)
+	} else if (check.checked) {
+		LocatorPlus.setRadius(50)
+	}
 }

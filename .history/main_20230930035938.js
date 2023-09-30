@@ -633,5 +633,9 @@ function toggleCheckboxes(activeCheckbox, otherCheckbox) {
 }
 
 function updateLocatorPlus(check) {
-	LocatorPlus.setRadius(check.value)
+	if (check.checked) {
+		LocatorPlus.setRadius(20)
+	} else if (check.checked) {
+		LocatorPlus.setRadius(50)
+	}
 }

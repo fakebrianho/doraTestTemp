@@ -31,9 +31,8 @@ class LocatorPlus {
 		return locator
 	}
 	static setRadius(newRadius) {
-		console.log(newRadius)
-		LocatorPlus.MAX_DISTANCE_MILES = newRadius
-		console.log(LocatorPlus.MAX_DISTANCE_MILES)
+		this.MAX_DISTANCE_MILES = newRadius
+		console.log(this.MAX_DISTANCE_MILES)
 	}
 
 	async loadMapsLibraries() {
@@ -306,7 +305,6 @@ class LocatorPlus {
 
 	/** Renders the list of items next to the map. */
 	renderResultsList() {
-		console.log(LocatorPlus.MAX_DISTANCE_MILES)
 		let locations = this.allLocations.slice()
 		for (let i = 0; i < locations.length; i++) {
 			locations[i].index = i
@@ -321,7 +319,7 @@ class LocatorPlus {
 			locations = locations.filter((location) => {
 				return (
 					location.distance != null &&
-					location.distance <= LocatorPlus.MAX_DISTANCE_MILES
+					location.distance <= this.MAX_DISTANCE_MILES
 				)
 			})
 			locations.sort((a, b) => {
@@ -633,5 +631,9 @@ function toggleCheckboxes(activeCheckbox, otherCheckbox) {
 }
 
 function updateLocatorPlus(check) {
-	LocatorPlus.setRadius(check.value)
+	if (check.checked) {
+		LocatorPlus.setRadius(20)
+	} else if (check.checked) {
+		LocatorPlus.setRadius(50)
+	}
 }

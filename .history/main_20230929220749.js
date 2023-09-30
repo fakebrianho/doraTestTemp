@@ -6,11 +6,9 @@ class LocatorPlus {
 	static REQUIRED_MAPS_JS_LIBRARIES = ['core', 'geometry', 'marker', 'routes']
 	static MAX_LOCATIONS_TO_SHOW = 5
 	static MAX_DISTANCE_METERS = 16093
-	static MAX_DISTANCE_MILES = 50
 
 	constructor(configuration) {
 		this.MAX_DISTANCE_METERS = 16093
-		this.MAX_DISTANCE_MILES = 50
 		this.allLocations = configuration.locations || []
 		this.locations = configuration.locations || []
 		this.capabilities = configuration.capabilities || {}
@@ -32,8 +30,11 @@ class LocatorPlus {
 	}
 	static setRadius(newRadius) {
 		console.log(newRadius)
-		LocatorPlus.MAX_DISTANCE_MILES = newRadius
-		console.log(LocatorPlus.MAX_DISTANCE_MILES)
+		this.MAX_DISTANCE_METERS = newRadius * 1609.34
+		console.log(this.MAX_DISTANCE_METERS)
+		// Assuming you store radius in a static configuration
+		// LocatorPlus.CONFIGURATION.radius = newRadius
+		// Any additional logic to update or refresh the map goes here...
 	}
 
 	async loadMapsLibraries() {
@@ -304,83 +305,47 @@ class LocatorPlus {
 		return li
 	}
 
-	/** Renders the list of items next to the map. */
 	renderResultsList() {
-		console.log(LocatorPlus.MAX_DISTANCE_MILES)
-		let locations = this.allLocations.slice()
+		// console.log()
+		// let locations = this.allLocations.slice()
+		let locations = this.locations
 		for (let i = 0; i < locations.length; i++) {
 			locations[i].index = i
 		}
+
 		if (this.searchLocation) {
-			console.log('both times')
+			// console.log(this.MAX_DISTANCE_METERS)
 			this.sectionNameEl.textContent =
 				'Nearest locations (' + this.locations.length + ')'
-			locations.forEach((location) => {
-				location.distance = this.getLocationDistance(location) / 490.4
-			})
-			locations = locations.filter((location) => {
-				return (
-					location.distance != null &&
-					location.distance <= LocatorPlus.MAX_DISTANCE_MILES
+			// console.log(
+			// 	'Distances before filtering:',
+			// 	locations.map((loc) => this.getLocationDistance(loc))
+			// )
+
+			locations = locations
+				.map((location) => ({
+					...location,
+					distance: this.getLocationDistance(location),
+				}))
+				.filter(
+					(location) => location.distance <= this.MAX_DISTANCE_METERS
 				)
-			})
-			locations.sort((a, b) => {
-				return a.distance - b.distance
-			})
+				.sort((a, b) => a.distance - b.distance)
 		} else {
 			this.sectionNameEl.textContent = `All locations (${this.allLocations.length})`
 		}
 
-		console.log(locations, 'biii')
-		this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
-		// this.locations = locations
-		console.log(this.locations, 'hiiii')
+		// console.log(
+		// 	'Distances after filtering:',
+		// 	locations.map((loc) => loc.distance)
+		// )
+		// // console.log(locations)
 
+		this.locations = locations
 		this.resultsContainerEl.replaceChildren(
 			...this.locations.map((x) => this.createResultItem(x))
 		)
 	}
-
-	// renderResultsList() {
-	// 	// let locations = this.allLocations.slice()
-	// 	let locations = this.locations
-	// 	for (let i = 0; i < locations.length; i++) {
-	// 		locations[i].index = i
-	// 	}
-
-	// 	if (this.searchLocation) {
-	// 		console.log(this.MAX_DISTANCE_METERS)
-	// 		this.sectionNameEl.textContent =
-	// 			'Nearest locations (' + this.locations.length + ')'
-	// 		console.log(
-	// 			'Distances before filtering:',
-	// 			locations.map((loc) => this.getLocationDistance(loc))
-	// 		)
-
-	// 		locations = locations
-	// 			.map((location) => ({
-	// 				...location,
-	// 				distance: this.getLocationDistance(location),
-	// 			}))
-	// 			.filter(
-	// 				(location) => location.distance <= this.MAX_DISTANCE_METERS
-	// 			)
-	// 			.sort((a, b) => a.distance - b.distance)
-	// 	} else {
-	// 		this.sectionNameEl.textContent = `All locations (${this.allLocations.length})`
-	// 	}
-
-	// 	console.log(
-	// 		'Distances after filtering:',
-	// 		locations.map((loc) => loc.distance)
-	// 	)
-	// 	// console.log(locations)
-
-	// 	this.locations = locations
-	// 	this.resultsContainerEl.replaceChildren(
-	// 		...this.locations.map((x) => this.createResultItem(x))
-	// 	)
-	// }
 
 	sortNearbyPlaces(results) {
 		console.log(this.searchLocation)
@@ -455,6 +420,7 @@ class LocatorPlus {
 		// Update map bounds to include the new location marker.
 		this.updateBounds()
 
+		console.log('searching!', this.location)
 		// Update the result list so we can sort it by proximity.
 		this.renderResultsList()
 
@@ -509,7 +475,6 @@ class LocatorPlus {
 							const location =
 								clonedLocations[i + chunkIndex * 10]
 							if (location && distResult.status === 'OK') {
-								// console.log(distResult.distance.text)
 								location.travelDistanceText =
 									distResult.distance.text
 								location.travelDistanceValue =
@@ -525,6 +490,7 @@ class LocatorPlus {
 							LocatorPlus.MAX_LOCATIONS_TO_SHOW
 						)
 						this.locations = clonedLocations
+						console.log('updating', this.locations)
 						this.renderResultsList()
 						this.updateMap() // This will reinitialize your map markers.
 					}
@@ -610,16 +576,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 document.addEventListener('DOMContentLoaded', function () {
 	// Get all checkboxes
-	const checkbox20miles = document.getElementById('20miles')
+	const checkbox25miles = document.getElementById('25miles')
 	const checkbox50miles = document.getElementById('50miles')
 
-	checkbox20miles.addEventListener('change', function () {
-		toggleCheckboxes(checkbox20miles, checkbox50miles)
-		updateLocatorPlus(checkbox20miles)
+	checkbox25miles.addEventListener('change', function () {
+		toggleCheckboxes(checkbox25miles, checkbox50miles)
+		updateLocatorPlus(checkbox25miles)
 	})
 
 	checkbox50miles.addEventListener('change', function () {
-		toggleCheckboxes(checkbox50miles, checkbox20miles)
+		toggleCheckboxes(checkbox50miles, checkbox25miles)
 		updateLocatorPlus(checkbox50miles)
 	})
 })
@@ -633,5 +599,9 @@ function toggleCheckboxes(activeCheckbox, otherCheckbox) {
 }
 
 function updateLocatorPlus(check) {
-	LocatorPlus.setRadius(check.value)
+	if (check.checked) {
+		LocatorPlus.setRadius(25)
+	} else if (check.checked) {
+		LocatorPlus.setRadius(50)
+	}
 }
