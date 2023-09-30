@@ -1,6 +1,7 @@
 export function fetchLocations() {
 	const SHEET_ID = '10FkMzWhOwXzS1XjHvg0UYQCDw4_mj0CVpqCHZ_pmD78'
 	const RANGE = 'Locations!K2:K' // get our data from combined column
+	// const API_KEY = 'AIzaSyAOe-rwikKX4vd9gDO_wzP2ePGTUkTL4Fs'
 	const API_KEY = 'AIzaSyCi-IJ3Kn_U_qZLlUvvHDk6HXKMnIxCzCo'
 	const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`
 
