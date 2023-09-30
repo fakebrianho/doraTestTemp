@@ -30,7 +30,9 @@ class LocatorPlus {
 
 		return locator
 	}
-
+	// static setRadius(newRadius) {
+	// 	LocatorPlus.MAX_DISTANCE_MILES = newRadius
+	// 	LocatorPlus.renderResultsList()
 	setRadius(newRadius) {
 		this.constructor.MAX_DISTANCE_MILES = newRadius // This sets the static property.
 		this.renderResultsList()

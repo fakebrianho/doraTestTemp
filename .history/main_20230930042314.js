@@ -1,7 +1,7 @@
 import { APILoader } from 'https://unpkg.com/@googlemaps/extended-component-library@0.4'
 import { fetchLocations } from './FetchLocations'
 import { getDataFromLocalStorage } from './WriteToLocal'
-let locatorInstance
+
 class LocatorPlus {
 	static REQUIRED_MAPS_JS_LIBRARIES = ['core', 'geometry', 'marker', 'routes']
 	static MAX_LOCATIONS_TO_SHOW = 5
@@ -30,12 +30,10 @@ class LocatorPlus {
 
 		return locator
 	}
-
-	setRadius(newRadius) {
-		this.constructor.MAX_DISTANCE_MILES = newRadius // This sets the static property.
-		this.renderResultsList()
+	static setRadius(newRadius) {
+		LocatorPlus.MAX_DISTANCE_MILES = newRadius
+		LocatorPlus.renderResultsList()
 	}
-	// }
 
 	async loadMapsLibraries() {
 		this.mapsLibraries = {}
@@ -514,9 +512,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 			actions: false,
 		},
 	}
-	locatorInstance = await LocatorPlus.init(CONFIGURATION)
+	const locatorInstance = await LocatorPlus.init(configuration)
 
-	// LocatorPlus.init(CONFIGURATION)
+	LocatorPlus.init(CONFIGURATION)
 })
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -544,5 +542,5 @@ function toggleCheckboxes(activeCheckbox, otherCheckbox) {
 }
 
 function updateLocatorPlus(check) {
-	locatorInstance.setRadius(check.value)
+	LocatorPlus.setRadius(check.value)
 }
