@@ -32,7 +32,7 @@ class LocatorPlus {
 	}
 	static setRadius(newRadius) {
 		LocatorPlus.MAX_DISTANCE_MILES = newRadius
-		LocatorPlus.renderResultsList()
+		this.renderResultsList()
 	}
 
 	async loadMapsLibraries() {
@@ -305,11 +305,15 @@ class LocatorPlus {
 
 	/** Renders the list of items next to the map. */
 	renderResultsList() {
+		console.log(LocatorPlus.MAX_DISTANCE_MILES)
 		let locations = this.allLocations.slice()
 		for (let i = 0; i < locations.length; i++) {
 			locations[i].index = i
 		}
 		if (this.searchLocation) {
+			console.log('both times')
+			this.sectionNameEl.textContent =
+				'Nearest locations (' + this.locations.length + ')'
 			locations.forEach((location) => {
 				location.distance = this.getLocationDistance(location) / 490.4
 			})
@@ -322,21 +326,61 @@ class LocatorPlus {
 			locations.sort((a, b) => {
 				return a.distance - b.distance
 			})
-			this.sectionNameEl.textContent =
-				'Nearest locations (' + locations.length + ')'
 		} else {
 			this.sectionNameEl.textContent = `All locations (${this.allLocations.length})`
 		}
 
 		console.log(locations, 'biii')
-		// this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
-		this.locations = locations
+		this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
+		// this.locations = locations
 		console.log(this.locations, 'hiiii')
 
 		this.resultsContainerEl.replaceChildren(
 			...this.locations.map((x) => this.createResultItem(x))
 		)
 	}
+
+	// renderResultsList() {
+	// 	// let locations = this.allLocations.slice()
+	// 	let locations = this.locations
+	// 	for (let i = 0; i < locations.length; i++) {
+	// 		locations[i].index = i
+	// 	}
+
+	// 	if (this.searchLocation) {
+	// 		console.log(this.MAX_DISTANCE_METERS)
+	// 		this.sectionNameEl.textContent =
+	// 			'Nearest locations (' + this.locations.length + ')'
+	// 		console.log(
+	// 			'Distances before filtering:',
+	// 			locations.map((loc) => this.getLocationDistance(loc))
+	// 		)
+
+	// 		locations = locations
+	// 			.map((location) => ({
+	// 				...location,
+	// 				distance: this.getLocationDistance(location),
+	// 			}))
+	// 			.filter(
+	// 				(location) => location.distance <= this.MAX_DISTANCE_METERS
+	// 			)
+	// 			.sort((a, b) => a.distance - b.distance)
+	// 	} else {
+	// 		this.sectionNameEl.textContent = `All locations (${this.allLocations.length})`
+	// 	}
+
+	// 	console.log(
+	// 		'Distances after filtering:',
+	// 		locations.map((loc) => loc.distance)
+	// 	)
+	// 	// console.log(locations)
+
+	// 	this.locations = locations
+	// 	this.resultsContainerEl.replaceChildren(
+	// 		...this.locations.map((x) => this.createResultItem(x))
+	// 	)
+	// }
+
 	sortNearbyPlaces(results) {
 		console.log(this.searchLocation)
 		if (results && results.length > 0) {

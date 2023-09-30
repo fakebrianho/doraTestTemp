@@ -329,8 +329,8 @@ class LocatorPlus {
 		}
 
 		console.log(locations, 'biii')
-		// this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
-		this.locations = locations
+		this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
+		// this.locations = locations
 		console.log(this.locations, 'hiiii')
 
 		this.resultsContainerEl.replaceChildren(

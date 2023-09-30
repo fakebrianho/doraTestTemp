@@ -305,11 +305,15 @@ class LocatorPlus {
 
 	/** Renders the list of items next to the map. */
 	renderResultsList() {
+		console.log(LocatorPlus.MAX_DISTANCE_MILES)
 		let locations = this.allLocations.slice()
 		for (let i = 0; i < locations.length; i++) {
 			locations[i].index = i
 		}
 		if (this.searchLocation) {
+			console.log('both times')
+			this.sectionNameEl.textContent =
+				'Nearest locations (' + this.locations.length + ')'
 			locations.forEach((location) => {
 				location.distance = this.getLocationDistance(location) / 490.4
 			})
@@ -322,15 +326,13 @@ class LocatorPlus {
 			locations.sort((a, b) => {
 				return a.distance - b.distance
 			})
-			this.sectionNameEl.textContent =
-				'Nearest locations (' + locations.length + ')'
 		} else {
 			this.sectionNameEl.textContent = `All locations (${this.allLocations.length})`
 		}
 
 		console.log(locations, 'biii')
-		// this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
-		this.locations = locations
+		this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
+		// this.locations = locations
 		console.log(this.locations, 'hiiii')
 
 		this.resultsContainerEl.replaceChildren(

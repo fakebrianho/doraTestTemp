@@ -323,14 +323,14 @@ class LocatorPlus {
 				return a.distance - b.distance
 			})
 			this.sectionNameEl.textContent =
-				'Nearest locations (' + locations.length + ')'
+				'Nearest locations (' + this.locations.length + ')'
 		} else {
 			this.sectionNameEl.textContent = `All locations (${this.allLocations.length})`
 		}
 
 		console.log(locations, 'biii')
-		// this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
-		this.locations = locations
+		this.locations = locations.slice(0, LocatorPlus.MAX_LOCATIONS_TO_SHOW)
+		// this.locations = locations
 		console.log(this.locations, 'hiiii')
 
 		this.resultsContainerEl.replaceChildren(
