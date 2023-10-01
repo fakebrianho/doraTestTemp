@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Locator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link href='style.css' rel='stylesheet'>
+
+  <script type='module' src='main.js'></script>
+</head>
+
+<body>
+  <gmpx-api-loader key="AIzaSyD9ny0ZwZE4hjH0RWqsdWxNed2qR2HFBKk"
+    solution-channel="GMP_QB_locatorplus_v8_cABCDE"></gmpx-api-loader>
+
+  <gmpx-split-layout>
+    <gmpx-overlay-layout slot="fixed">
+      <div id="locations-panel" slot="main">
+        <div id="locations-panel-list">
+          <header>
+            <h1 class="search-title">
+              <img src="https://fonts.gstatic.com/s/i/googlematerialicons/place/v15/24px.svg" alt="" />
+              Find a location near you
+            </h1>
+            <gmpx-place-picker for-map="main-map" placeholder="Enter your address or zip code" type="geocode">
+            </gmpx-place-picker>
+          </header>
+          <div class="section-name" id="location-results-section-name">
+            All locations
+          </div>
+          <div class="results">
+            <ul id="location-results-list"></ul>
+          </div>
+        </div>
+      </div>
+      <!-- <div id="details-panel" slot="overlay">
+        <button class="back-button">
+          <img class="icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/arrow_back/v11/24px.svg" alt="" />
+          Back
+        </button>
+        <gmpx-place-overview google-logo-already-displayed></gmpx-place-overview>
+      </div> -->
+    </gmpx-overlay-layout>
+    <gmp-map slot="main" id="main-map">
+      <gmpx-route-overview no-pin></gmpx-route-overview>
+    </gmp-map>
+  </gmpx-split-layout>
+
+  <template id="locator-result-item-template">
+    <li>
+      <gmpx-place-data-provider auto-fetch-disabled>
+        <div class="result-item">
+          <button class="select-location">
+            <h2 class="name">
+              <gmpx-place-field-text field="displayName"></gmpx-place-field-text>
+            </h2>
+          </button>
+          <div class="address"></div>
+          <!-- <div class="actions">
+            <gmpx-icon-button class="view-details">
+              View details
+            </gmpx-icon-button>
+          </div> -->
+          <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+          <label for="vehicle1"> I have a bike</label><br>
+          <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
+          <label for="vehicle2"> I have a car</label><br>
+          <div class="distance"></div>
+          <gmpx-place-directions-button condensed></gmpx-place-directions-button>
+        </div>
+      </gmpx-place-data-provider>
+    </li>
+  </template>
+</body>
+
+</html>
