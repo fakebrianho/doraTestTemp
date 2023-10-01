@@ -457,6 +457,31 @@ class LocatorPlus {
 			this.markers = []
 		}
 	}
+
+	/**
+	 * Update directions displayed from the search location to the selected
+	 * location on the map.
+	 */
+	updateDirections(selectedIndex = null) {
+		// console.log(this.locations[selectedIndex])
+		if (this.searchLocation && this.selectedLocationIdx != null) {
+			this.routeEl.originLatLng = this.searchLocation.location
+			if (selectedIndex !== null) {
+				// console.log(this.locations)
+				this.routeEl.destinationLatLng =
+					this.locations[selectedIndex].coords
+				this.selectedIndex = null
+			} else {
+				console.log('i shluldnt be running bith')
+				console.log(selectedIndex)
+				console.log(this.allLocations[this.selectedLocationIdx])
+				this.routeEl.destinationLatLng =
+					this.allLocations[this.selectedLocationIdx].coords
+			}
+		}
+	}
+
+	/** Opens the overlay to show details about a selected location. */
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
