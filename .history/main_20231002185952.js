@@ -165,7 +165,27 @@ class LocatorPlus {
 		// 	console.log(location)
 		// })
 
+		console.log(this.locations[0])
 		this.markers = this.locations.map((location, index) => {
+			const locationResults = document.querySelector(
+				'#location-results-list'
+			)
+			const listElem = locationResults.querySelectorAll('li')
+			const hasMatch = Array.from(listElem).find(function (li) {
+				return (
+					parseFloat(li.getAttribute('data-location-index')) ===
+					location.index
+				)
+			})
+			const shadow = hasMatch.querySelector(
+				'gmpx-place-directions-button'
+			).shadowRoot
+			const link = shadow.querySelector('gmpx-icon-button')
+			// console.log(shadow)
+			// console.log(shadow.querySelector('gmpx-icon-button'))
+			// console.log(this.searchLocation.g)
+			console.log(location)
+
 			const contentText = `<div id='detail_content'>
 					<h3 id="detail_heading">${location.title}</h3>	
 					<p>${location.address1 + ' ' + location.address2}</p>

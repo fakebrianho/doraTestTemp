@@ -165,6 +165,7 @@ class LocatorPlus {
 		// 	console.log(location)
 		// })
 
+		console.log(this.locations[0])
 		this.markers = this.locations.map((location, index) => {
 			const contentText = `<div id='detail_content'>
 					<h3 id="detail_heading">${location.title}</h3>	
