@@ -165,15 +165,25 @@ class LocatorPlus {
 		// 	console.log(location)
 		// })
 
+		console.log(this.locations[0])
 		this.markers = this.locations.map((location, index) => {
+			const locationResults = document.querySelector(
+				'#location-results-list'
+			)
+			const listElem = locationResults.querySelectorAll('li')
+			console.log(location.index)
+			console.log(
+				Array.from(listElem)[0].getAttribute('data-location-index')
+			)
+			let hasMatch = Array.from(listElem).some(function (li) {
+				return li.getAttribute('data-location-index') === location.index
+			})
+			console.log(hasMatch)
+
 			const contentText = `<div id='detail_content'>
 					<h3 id="detail_heading">${location.title}</h3>	
 					<p>${location.address1 + ' ' + location.address2}</p>
-					<a href="https://www.google.com/maps/dir/?api=1&origin=${
-						this.searchLocation.g.location.lat
-					}, ${this.searchLocation.g.location.lng}&destination=${
-				location.coords.lat
-			}, ${location.coords.lng}" target="_blank">Directions</a>
+					<a href=#>Directions</a>
 				</div>`
 			const infoWindow = new this.mapsLibraries.maps.InfoWindow({
 				content: contentText,

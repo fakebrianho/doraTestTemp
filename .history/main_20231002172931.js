@@ -157,23 +157,15 @@ class LocatorPlus {
 
 	updateMap() {
 		const locationResults = document.querySelector('#location-results-list')
-		const listElem = locationResults.querySelectorAll('li')
-		listElem.forEach((li) => {
-			console.log(li)
+		locationResults.forEach((location) => {
+			console.log(location)
 		})
-		// locationResults.forEach((location) => {
-		// 	console.log(location)
-		// })
 
 		this.markers = this.locations.map((location, index) => {
 			const contentText = `<div id='detail_content'>
 					<h3 id="detail_heading">${location.title}</h3>	
 					<p>${location.address1 + ' ' + location.address2}</p>
-					<a href="https://www.google.com/maps/dir/?api=1&origin=${
-						this.searchLocation.g.location.lat
-					}, ${this.searchLocation.g.location.lng}&destination=${
-				location.coords.lat
-			}, ${location.coords.lng}" target="_blank">Directions</a>
+					<a href=#>Directions</a>
 				</div>`
 			const infoWindow = new this.mapsLibraries.maps.InfoWindow({
 				content: contentText,

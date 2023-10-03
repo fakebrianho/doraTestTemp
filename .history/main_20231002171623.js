@@ -156,24 +156,12 @@ class LocatorPlus {
 	}
 
 	updateMap() {
-		const locationResults = document.querySelector('#location-results-list')
-		const listElem = locationResults.querySelectorAll('li')
-		listElem.forEach((li) => {
-			console.log(li)
-		})
-		// locationResults.forEach((location) => {
-		// 	console.log(location)
-		// })
-
+		console.log(this.locations[0])
 		this.markers = this.locations.map((location, index) => {
 			const contentText = `<div id='detail_content'>
 					<h3 id="detail_heading">${location.title}</h3>	
 					<p>${location.address1 + ' ' + location.address2}</p>
-					<a href="https://www.google.com/maps/dir/?api=1&origin=${
-						this.searchLocation.g.location.lat
-					}, ${this.searchLocation.g.location.lng}&destination=${
-				location.coords.lat
-			}, ${location.coords.lng}" target="_blank">Directions</a>
+					<a href=#>Directions</a>
 				</div>`
 			const infoWindow = new this.mapsLibraries.maps.InfoWindow({
 				content: contentText,
@@ -265,7 +253,6 @@ class LocatorPlus {
 
 	createResultItem(location) {
 		// Create the parent DOM node.
-		// console.log(location)
 		const li =
 			this.resultItemTemplate.content.firstElementChild.cloneNode(true)
 		li.dataset.locationIndex = location.index
@@ -286,16 +273,16 @@ class LocatorPlus {
 			: null
 		li.querySelector('.distance').textContent =
 			location.travelDistanceText ?? ''
-		// for (const action of location.actions ?? []) {
-		// 	console.log(action)
-		// 	if (action.defaultUrl) {
-		// 		const actionButton = document.createElement('gmpx-icon-button')
-		// 		actionButton.icon = 'open_in_new'
-		// 		actionButton.href = action.defaultUrl
-		// 		actionButton.textContent = action.label
-		// 		actionsContainer.append(actionButton)
-		// 	}
-		// }
+		const actionsContainer = li.querySelector('.actions')
+		for (const action of location.actions ?? []) {
+			if (action.defaultUrl) {
+				const actionButton = document.createElement('gmpx-icon-button')
+				actionButton.icon = 'open_in_new'
+				actionButton.href = action.defaultUrl
+				actionButton.textContent = action.label
+				actionsContainer.append(actionButton)
+			}
+		}
 
 		const resultSelectionHandler = (
 			isMarker = false,
